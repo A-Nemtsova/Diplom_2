@@ -2,6 +2,7 @@ package site.nomoreparties.stellarburgers;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
+import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.junit.After;
@@ -9,10 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 import site.nomoreparties.stellarburgers.client.OrderClient;
 import site.nomoreparties.stellarburgers.client.UserClient;
-import site.nomoreparties.stellarburgers.model.RequestOrder;
-import site.nomoreparties.stellarburgers.model.RequestRegisterUser;
-import site.nomoreparties.stellarburgers.model.ResponseError;
-import site.nomoreparties.stellarburgers.model.ResponseOrderOk;
+import site.nomoreparties.stellarburgers.model.requests.RequestOrder;
+import site.nomoreparties.stellarburgers.model.requests.RequestRegisterUser;
+import site.nomoreparties.stellarburgers.model.responses.ResponseError;
+import site.nomoreparties.stellarburgers.model.responses.ResponseGetOrdersOk;
+import site.nomoreparties.stellarburgers.model.responses.ResponseOrderOk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +22,23 @@ import java.util.List;
 import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
 
+@Story("Создание и получение заказа")
 public class CreateOrderTest {
+    /*
+    При прогоне тестов рандомно падают некоторые тесты с 429 ошибкой "Too Many Requests".
+    Если каждый тест запускать по отдельности, то все нормально, падений нет.
+    Обратилась с данной проблемой к наставнику, на что получила ответ, что "эту ошибку можно игнорировать", это по сути "дефект приложения".
+     */
 
     UserClient userClient;
     RequestRegisterUser requestRegisterUser;
     Response responseRegisterUser;
     String accessToken;
-
     OrderClient orderClient;
     RequestOrder requestOrder;
     Response responseOrder;
     ResponseOrderOk responseOrderOk;
+    ResponseGetOrdersOk responseGetOrdersOk;
     ResponseError responseError;
 
     @Before
@@ -80,7 +88,7 @@ public class CreateOrderTest {
 
     @Test
     @DisplayName("Создание заказа (с авторизацией и ингредиентами)")
-    @Description("Проверка, что в ответе в параметр name приходит не пустой")
+    @Description("Проверка, что в ответе приходит не пустой номер заказа")
     public void createOrderWithAutorizationCheckOrderNumberPositiveTest () {
         responseOrder = orderClient.createOrder(requestOrder, accessToken);
         responseOrderOk = responseOrder.as(ResponseOrderOk.class);
@@ -93,7 +101,7 @@ public class CreateOrderTest {
     Поэтому за правильное поведение принимаю, что заказ можно успешно создать без авторизации.
      */
     @Test
-    @DisplayName("Создание заказа (без авторизацией и ингредиентами)")
+    @DisplayName("Создание заказа (без авторизацией и с ингредиентами)")
     @Description("Проверка, что при создании заказа приходит 200 кода ответа")
     public void createOrderWithoutAutorizationStatusCodePositiveTest () {
         responseOrder = orderClient.createOrder(requestOrder, "");
@@ -101,28 +109,28 @@ public class CreateOrderTest {
     }
 
     @Test
-    @DisplayName("Создание заказа (без авторизацией и ингредиентами)")
+    @DisplayName("Создание заказа (без авторизацией и с ингредиентами)")
     @Description("Проверка, что в ответе в параметре success приходит true")
     public void createOrderWithoutAutorizationCheckSuccessPositiveTest () {
-        responseOrder = orderClient.createOrder(requestOrder, accessToken);
+        responseOrder = orderClient.createOrder(requestOrder, "");
         responseOrderOk = responseOrder.as(ResponseOrderOk.class);
         assertTrue(responseOrderOk.isSuccess());
     }
 
     @Test
-    @DisplayName("Создание заказа (без авторизацией и ингредиентами)")
+    @DisplayName("Создание заказа (без авторизацией и с ингредиентами)")
     @Description("Проверка, что в ответе в параметр name приходит не пустой")
     public void createOrderWithoutAutorizationCheckNamePositiveTest () {
-        responseOrder = orderClient.createOrder(requestOrder, accessToken);
+        responseOrder = orderClient.createOrder(requestOrder, "");
         responseOrderOk = responseOrder.as(ResponseOrderOk.class);
         assertNotNull(responseOrderOk.getName());
     }
 
     @Test
-    @DisplayName("Создание заказа (без авторизацией и ингредиентами)")
+    @DisplayName("Создание заказа (без авторизацией и с ингредиентами)")
     @Description("Проверка, что в ответе в параметр name приходит не пустой")
     public void createOrderWithoutAutorizationCheckOrderNumberPositiveTest () {
-        responseOrder = orderClient.createOrder(requestOrder, accessToken);
+        responseOrder = orderClient.createOrder(requestOrder, "");
         responseOrderOk = responseOrder.as(ResponseOrderOk.class);
         assertNotNull(responseOrderOk.getOrder().getNumber());
     }
@@ -174,5 +182,4 @@ public class CreateOrderTest {
         responseOrder = orderClient.createOrder(requestOrder, accessToken);
         assertEquals(SC_INTERNAL_SERVER_ERROR, responseOrder.statusCode());
     }
-
 }

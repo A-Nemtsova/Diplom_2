@@ -9,16 +9,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import site.nomoreparties.stellarburgers.client.UserClient;
-import site.nomoreparties.stellarburgers.model.RequestLoginUser;
-import site.nomoreparties.stellarburgers.model.RequestRegisterUser;
-import site.nomoreparties.stellarburgers.model.ResponseRegisterAndLoginUserOk;
-import site.nomoreparties.stellarburgers.model.ResponseError;
+import site.nomoreparties.stellarburgers.model.requests.RequestRegisterUser;
+import site.nomoreparties.stellarburgers.model.responses.ResponseRegisterAndLoginUserOk;
+import site.nomoreparties.stellarburgers.model.responses.ResponseError;
 
 import static org.junit.Assert.*;
 import static org.apache.http.HttpStatus.*;
 
 @Story("Создание пользователя")
 public class RegisterUserTest {
+    /*
+    При прогоне тестов рандомно падают некоторые тесты с 429 ошибкой "Too Many Requests".
+    Если каждый тест запускать по отдельности, то все нормально, падений нет.
+    Обратилась с данной проблемой к наставнику, на что получила ответ, что "эту ошибку можно игнорировать", это по сути "дефект приложения".
+     */
+
     RequestRegisterUser requestRegisterUser;
     UserClient userClient;
     Response responseRegisterUser;
@@ -36,18 +41,9 @@ public class RegisterUserTest {
     public void clear() {
 
         if (responseRegisterUser.statusCode() == 200) {
-            //requestLoginUser = new RequestLoginUser(requestRegisterUser.getEmail(), requestRegisterUser.getPassword());
-            //userClient.deleteUser(userClient.getAccessToken(requestLoginUser));
             accessToken = responseRegisterUser.body().jsonPath().getString("accessToken");
             userClient.deleteUser(accessToken);
         }
-
-         /*
-        accessToken = responseRegisterUser.body().jsonPath().getString("accessToken");
-        //System.out.println(accessToken);
-        if (accessToken.length() != 0) {
-            userClient.deleteUser(accessToken);
-        }*/
     }
 
     @Test

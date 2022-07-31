@@ -10,12 +10,21 @@ import org.junit.Before;
 import org.junit.Test;
 import site.nomoreparties.stellarburgers.client.UserClient;
 import site.nomoreparties.stellarburgers.model.*;
+import site.nomoreparties.stellarburgers.model.requests.RequestRegisterUser;
+import site.nomoreparties.stellarburgers.model.responses.ResponseError;
+import site.nomoreparties.stellarburgers.model.responses.ResponseRegisterAndLoginUserOk;
+import site.nomoreparties.stellarburgers.model.responses.ResponseUserDataOk;
 
 import static org.junit.Assert.*;
 import static org.apache.http.HttpStatus.*;
 
 @Story("Изменение данных пользователя")
 public class UpdateUserDataTest {
+    /*
+    При прогоне тестов рандомно падают некоторые тесты с 429 ошибкой "Too Many Requests".
+    Если каждый тест запускать по отдельности, то все нормально, падений нет.
+    Обратилась с данной проблемой к наставнику, на что получила ответ, что "эту ошибку можно игнорировать", это по сути "дефект приложения".
+     */
 
     UserClient userClient;
     RequestRegisterUser requestRegisterUser;
@@ -24,7 +33,6 @@ public class UpdateUserDataTest {
     User user;
     String email;
     String name;
-    RequestLoginUser requestLoginUser;
     Response responseUserData;
 
     @Before
@@ -43,8 +51,6 @@ public class UpdateUserDataTest {
     @Step("Удаление созданного пользователя")
     public void clear() {
         if (responseRegisterUser.statusCode() == 200) {
-            //email = user.getEmail();
-            //requestLoginUser = new RequestLoginUser(email, requestRegisterUser.getPassword());
             userClient.deleteUser(accessToken);
         }
     }

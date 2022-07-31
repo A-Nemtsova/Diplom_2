@@ -2,8 +2,8 @@ package site.nomoreparties.stellarburgers.client;
 
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
-import site.nomoreparties.stellarburgers.model.RequestLoginUser;
-import site.nomoreparties.stellarburgers.model.RequestRegisterUser;
+import site.nomoreparties.stellarburgers.model.requests.RequestLoginUser;
+import site.nomoreparties.stellarburgers.model.requests.RequestRegisterUser;
 import site.nomoreparties.stellarburgers.model.User;
 
 import static io.restassured.RestAssured.given;
@@ -49,24 +49,12 @@ public class UserClient extends BaseApiClient {
                 .when()
                 .patch(BASE_URL + "/api/auth/user");
     }
-/*
-    @Step("Изменение данных пользователя")
-    public Response updateUserWithOutAccessToken(User user) {
-        return given()
-                .spec(getSpecForJson(""))
-                .body(user)
-                .when()
-                .patch(BASE_URL + "/api/auth/user");
-    }
-*/
+
     @Step("Удаление пользователя")
     public Response deleteUser (String accessToken) {
         return given()
                 .spec(getSpecForJson(accessToken))
                 .when()
                 .delete(BASE_URL + "/api/auth/user");
-
     }
-
-
 }

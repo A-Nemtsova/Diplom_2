@@ -10,10 +10,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import site.nomoreparties.stellarburgers.client.UserClient;
-import site.nomoreparties.stellarburgers.model.RequestLoginUser;
-import site.nomoreparties.stellarburgers.model.RequestRegisterUser;
-import site.nomoreparties.stellarburgers.model.ResponseError;
-import site.nomoreparties.stellarburgers.model.ResponseRegisterAndLoginUserOk;
+import site.nomoreparties.stellarburgers.model.requests.RequestLoginUser;
+import site.nomoreparties.stellarburgers.model.requests.RequestRegisterUser;
+import site.nomoreparties.stellarburgers.model.responses.ResponseError;
+import site.nomoreparties.stellarburgers.model.responses.ResponseRegisterAndLoginUserOk;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
@@ -22,6 +22,12 @@ import static org.junit.Assert.assertNotNull;
 
 @Story("Логин пользователя")
 public class LoginUserTest {
+    /*
+    При прогоне тестов рандомно падают некоторые тесты с 429 ошибкой "Too Many Requests".
+    Если каждый тест запускать по отдельности, то все нормально, падений нет.
+    Обратилась с данной проблемой к наставнику, на что получила ответ, что "эту ошибку можно игнорировать", это по сути "дефект приложения".
+     */
+
     RequestRegisterUser requestRegisterUser;
     RequestLoginUser requestLoginUser;
     UserClient userClient;
@@ -42,7 +48,6 @@ public class LoginUserTest {
     @Step("Удаление созданного пользователя")
     public void clear() {
         if (responseRegisterUser.statusCode() == 200) {
-            //userClient.deleteUser(userClient.getAccessToken(requestLoginUser));
             accessToken = responseRegisterUser.body().jsonPath().getString("accessToken");
             userClient.deleteUser(accessToken);
         }
@@ -158,5 +163,4 @@ public class LoginUserTest {
         ResponseError responseError = responseLoginUser.as(ResponseError.class);
         assertEquals("email or password are incorrect", responseError.getMessage());
     }
-
 }

@@ -3,6 +3,8 @@ package site.nomoreparties.stellarburgers.client;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import site.nomoreparties.stellarburgers.model.*;
+import site.nomoreparties.stellarburgers.model.requests.RequestOrder;
+import site.nomoreparties.stellarburgers.model.responses.ResponseIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class OrderClient extends BaseApiClient{
             return new RequestOrder(hashIngredientList);
         }
 
-
+    @Step("Создание заказа")
     public Response createOrder (RequestOrder requestOrder,String accessToken) {
         return given()
                 .spec(getSpecForJson(accessToken))
@@ -42,4 +44,11 @@ public class OrderClient extends BaseApiClient{
                 .post(BASE_URL + "/api/orders");
     }
 
+    @Step("Получение заказа")
+    public Response getOrdersForUser (String accessToken) {
+        return given()
+                .spec(getSpecForJson(accessToken))
+                .when()
+                .get(BASE_URL + "/api/orders");
+    }
 }

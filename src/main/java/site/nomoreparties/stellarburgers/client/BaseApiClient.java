@@ -15,8 +15,6 @@ public class BaseApiClient {
                 .log(LogDetail.ALL)
                 .setContentType(ContentType.JSON)
                 .addHeader("Authorization", accessToken)
-                //.setAuth(accessToken)
-                //.addFormParam("authorization", accessToken)
                 .build();
     }
 }
